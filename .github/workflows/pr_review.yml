@@ -31,6 +31,7 @@ jobs:
         run: |
           git fetch origin main
           git diff origin/main...HEAD -- '*.py' > pr_police/pr_diff.txt
+          git diff origin/main...HEAD -- '*.ipynb' > pr_police/pr_diff.txt
           cat pr_police/pr_diff.txt
 
       - name: Run PR Police
