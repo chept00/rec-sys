@@ -1,0 +1,39 @@
+name: PR Police
+
+on:
+  pull_request:
+    branches: [main]
+
+env:
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  PR_NUMBER: ${{ github.event.pull_request.number }}
+  GITHUB_REPOSITORY: ${{ github.repository }}
+  PR_REVIEW_URL: http://localhost:8000/generate
+  MODEL: qwen2.5-coder:7b
+
+jobs:
+  review:
+    runs-on: self-hosted
+    permissions:
+      pull-requests: write
+      contents: read
+
+    steps:
+      - name: Checkout PR code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref }}
+
+      - name: Get changed files
+        id: diff
+        run: |
+          git fetch origin main
+          git diff origin/main...HEAD -- '*.py' > pr_police/pr_diff.txt
+          cat pr_police/pr_diff.txt
+
+      - name: Run PR Police
+        run: |
+          python pr_police/review.py
+        continue-on-error: false
