@@ -1,3 +1,3 @@
 README
 
-test pr-bot
+test pr-bot2
